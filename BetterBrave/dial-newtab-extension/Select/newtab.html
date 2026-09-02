@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Tab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="bg-wallpaper" id="bgWallpaper" aria-hidden="true">
+    <video id="bgVideo" autoplay loop muted playsinline hidden></video>
+    <img id="bgImage" alt="" hidden>
+    <div class="bg-wallpaper-dim"></div>
+  </div>
+
+  <main class="stage">
+
+    <section class="hero">
+      <div class="hero-clock" id="clock">00:00:00</div>
+      <div class="hero-date" id="dateLine">—</div>
+      <div class="hero-greeting" id="greeting">Hello</div>
+    </section>
+
+    <form class="cmdbar" id="cmdForm" autocomplete="off">
+      <select class="cmdbar-engine" id="engineSelect" aria-label="Search engine">
+        <option value="brave">Brave Search</option>
+        <option value="google">Google</option>
+        <option value="ddg">DuckDuckGo</option>
+        <option value="bing">Bing</option>
+      </select>
+      <input class="cmdbar-input" id="cmdInput" type="text" placeholder="Search or type a URL" aria-label="Search or type a URL">
+      <button class="cmdbar-go" type="submit" aria-label="Go">→</button>
+    </form>
+
+    <section class="dials" id="dialGrid" aria-label="Speed dial shortcuts">
+      <!-- dial tiles injected here -->
+    </section>
+
+  </main>
+
+  <nav class="dock" aria-label="Panels">
+    <button class="dock-btn" id="openNotes" title="Notes" aria-label="Open notes">
+      <svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 0 1 1 1v11l-5 5H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M14 21v-4a1 1 0 0 1 1-1h4"/></svg>
+    </button>
+    <button class="dock-btn" id="openTodo" title="To-do" aria-label="Open to-do list">
+      <svg viewBox="0 0 24 24"><path d="M9 11l2.5 2.5L18 7"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+    </button>
+    <button class="dock-btn" id="openSettings" title="Settings" aria-label="Open settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V19.6a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H4.4a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10.5a1.7 1.7 0 0 0 1-1.55V4.4a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10.5a1.7 1.7 0 0 0 1.55 1h.09a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+    </button>
+  </nav>
+
+  <!-- Add / edit dial modal -->
+  <div class="modal-overlay" id="dialModalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialModalTitle">
+      <h2 id="dialModalTitle">Add shortcut</h2>
+      <label class="field">
+        <span>Name</span>
+        <input type="text" id="dialName" placeholder="e.g. Mail" maxlength="40">
+      </label>
+      <label class="field">
+        <span>URL</span>
+        <input type="text" id="dialUrl" placeholder="e.g. mail.google.com">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="dialDelete" hidden>Delete</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-ghost" id="dialCancel">Cancel</button>
+          <button type="button" class="btn-primary" id="dialSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes drawer -->
+  <aside class="drawer" id="notesDrawer" aria-label="Notes">
+    <div class="drawer-head">
+      <h2>Notes</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+    <textarea id="notesArea" class="notes-area" placeholder="Jot something down…"></textarea>
+  </aside>
+
+  <!-- Todo drawer -->
+  <aside class="drawer" id="todoDrawer" aria-label="To-do list">
+    <div class="drawer-head">
+      <h2>To-do</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+    <form id="todoForm" class="todo-form" autocomplete="off">
+      <input type="text" id="todoInput" placeholder="Add a task">
+      <button type="submit" class="btn-primary">Add</button>
+    </form>
+    <ul class="todo-list" id="todoList"></ul>
+  </aside>
+
+  <!-- Settings drawer -->
+  <aside class="drawer" id="settingsDrawer" aria-label="Settings">
+    <div class="drawer-head">
+      <h2>Settings</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+
+    <div class="settings-group">
+      <h3>Accent</h3>
+      <div class="swatches" id="accentSwatches"></div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Background</h3>
+      <div class="option-row" id="bgOptions">
+        <button class="option-chip" data-bg="grid">Grid</button>
+        <button class="option-chip" data-bg="plain">Plain</button>
+        <button class="option-chip" data-bg="glow">Glow</button>
+        <button class="option-chip" data-bg="image">Image</button>
+        <button class="option-chip" data-bg="video">Live video</button>
+      </div>
+
+      <div class="wallpaper-controls" id="wallpaperControls" hidden>
+        <p class="hint" id="wallpaperHint">Choose a video file to loop as your background.</p>
+        <div class="option-row">
+          <button class="btn-ghost" id="wallpaperUploadBtn">Choose file…</button>
+          <button class="btn-ghost danger" id="wallpaperRemoveBtn">Remove</button>
+        </div>
+        <input type="file" id="wallpaperFile" hidden>
+        <label class="field dim-field">
+          <span>Dim overlay <span id="dimValue">45%</span></span>
+          <input type="range" id="wallpaperDim" min="0" max="80" value="45">
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Default search engine</h3>
+      <div class="option-row" id="engineOptions">
+        <button class="option-chip" data-engine="brave">Brave</button>
+        <button class="option-chip" data-engine="google">Google</button>
+        <button class="option-chip" data-engine="ddg">DuckDuckGo</button>
+        <button class="option-chip" data-engine="bing">Bing</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Your name</h3>
+      <input type="text" id="userName" class="text-input" placeholder="Optional, used in the greeting" maxlength="24">
+    </div>
+
+    <div class="settings-group">
+      <h3>Shortcuts data</h3>
+      <div class="option-row">
+        <button class="btn-ghost" id="exportBtn">Export JSON</button>
+        <button class="btn-ghost" id="importBtn">Import JSON</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+      <button class="btn-ghost danger" id="resetBtn">Reset to defaults</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim"></div>
+
+  <script src="js/newtab.js"></script>
+</body>
+</html>
