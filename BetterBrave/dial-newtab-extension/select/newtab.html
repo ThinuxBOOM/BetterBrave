@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Tab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="bg-wallpaper" id="bgWallpaper" aria-hidden="true">
+    <video id="bgVideo" autoplay loop muted playsinline hidden></video>
+    <img id="bgImage" alt="" hidden>
+    <div class="bg-wallpaper-dim"></div>
+  </div>
+
+  <button class="weather-chip" id="weatherChip" type="button" title="Refresh weather">
+    <span class="weather-icon" id="weatherIcon">🌤️</span>
+    <span class="weather-text">
+      <span class="weather-temp" id="weatherTemp">Set location</span>
+      <span class="weather-loc" id="weatherLoc"></span>
+    </span>
+  </button>
+
+  <main class="stage">
+
+    <section class="hero">
+      <div class="hero-clock" id="clock">00:00:00</div>
+      <div class="hero-date" id="dateLine">—</div>
+      <div class="hero-greeting" id="greeting">Hello</div>
+    </section>
+
+    <form class="cmdbar" id="cmdForm" autocomplete="off">
+      <select class="cmdbar-engine" id="engineSelect" aria-label="Search engine">
+        <option value="brave">Brave Search</option>
+        <option value="google">Google</option>
+        <option value="ddg">DuckDuckGo</option>
+        <option value="bing">Bing</option>
+      </select>
+      <input class="cmdbar-input" id="cmdInput" type="text" placeholder="Search or type a URL" aria-label="Search or type a URL">
+      <button class="cmdbar-go" type="submit" aria-label="Go">→</button>
+    </form>
+
+    <section class="dials" id="dialGrid" aria-label="Speed dial shortcuts">
+      <!-- dial tiles injected here -->
+    </section>
+
+  </main>
+
+  <nav class="dock" aria-label="Panels">
+    <button class="dock-btn" id="openNotes" title="Notes" aria-label="Open notes">
+      <svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 0 1 1 1v11l-5 5H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M14 21v-4a1 1 0 0 1 1-1h4"/></svg>
+    </button>
+    <button class="dock-btn" id="openTodo" title="To-do" aria-label="Open to-do list">
+      <svg viewBox="0 0 24 24"><path d="M9 11l2.5 2.5L18 7"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+    </button>
+    <button class="dock-btn" id="openMusic" title="Music" aria-label="Open music player">
+      <span class="dock-dot" id="musicDot" hidden></span>
+      <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </button>
+    <button class="dock-btn" id="openCleaner" title="Junk Cleaner" aria-label="Open Junk Cleaner widget">
+      <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.9L19 15z"/></svg>
+    </button>
+    <button class="dock-btn" id="openMonitor" title="Resource Monitor" aria-label="Open Resource Monitor widget">
+      <svg viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>
+    </button>
+    <button class="dock-btn" id="openSettings" title="Settings" aria-label="Open settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V19.6a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H4.4a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10.5a1.7 1.7 0 0 0 1-1.55V4.4a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10.5a1.7 1.7 0 0 0 1.55 1h.09a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+    </button>
+  </nav>
+
+  <!-- Add / edit dial modal -->
+  <div class="modal-overlay" id="dialModalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialModalTitle">
+      <h2 id="dialModalTitle">Add shortcut</h2>
+      <label class="field">
+        <span>Name</span>
+        <input type="text" id="dialName" placeholder="e.g. Mail" maxlength="40">
+      </label>
+      <label class="field">
+        <span>URL</span>
+        <input type="text" id="dialUrl" placeholder="e.g. mail.google.com">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="dialDelete" hidden>Delete</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-ghost" id="dialCancel">Cancel</button>
+          <button type="button" class="btn-primary" id="dialSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes drawer -->
+  <aside class="drawer" id="notesDrawer" aria-label="Notes">
+    <div class="drawer-head">
+      <h2>Notes</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+    <textarea id="notesArea" class="notes-area" placeholder="Jot something down…"></textarea>
+  </aside>
+
+  <!-- Todo drawer -->
+  <aside class="drawer" id="todoDrawer" aria-label="To-do list">
+    <div class="drawer-head">
+      <h2>To-do</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+    <form id="todoForm" class="todo-form" autocomplete="off">
+      <input type="text" id="todoInput" placeholder="Add a task">
+      <button type="submit" class="btn-primary">Add</button>
+    </form>
+    <ul class="todo-list" id="todoList"></ul>
+  </aside>
+
+  <!-- Music drawer -->
+  <aside class="drawer" id="musicDrawer" aria-label="Music player">
+    <div class="drawer-head">
+      <h2>Music</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+
+    <div class="player">
+      <div class="player-track" id="playerTrackName">No track selected</div>
+
+      <div class="player-progress">
+        <input type="range" id="playerSeek" min="0" max="100" value="0" step="0.1">
+        <div class="player-times">
+          <span id="playerCurrentTime">0:00</span>
+          <span id="playerDuration">0:00</span>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <button class="player-btn" id="playerPrev" aria-label="Previous track">
+          <svg viewBox="0 0 24 24"><path d="M19 20 9 12l10-8v16Z"/><path d="M5 19V5"/></svg>
+        </button>
+        <button class="player-btn player-btn-main" id="playerPlay" aria-label="Play">
+          <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" class="icon-hidden" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+        </button>
+        <button class="player-btn" id="playerNext" aria-label="Next track">
+          <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4Z"/><path d="M19 5v14"/></svg>
+        </button>
+        <button class="player-btn player-mute" id="playerMute" aria-label="Toggle mute">
+          <svg id="volIcon" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+          <svg id="muteIcon" class="icon-hidden" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4Z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+        </button>
+      </div>
+
+      <input type="range" id="playerVolume" class="player-volume" min="0" max="100" value="70">
+    </div>
+
+    <div class="playlist-head">
+      <h3>Playlist</h3>
+      <button class="btn-ghost" id="addTracksBtn">Add tracks</button>
+      <input type="file" id="tracksFile" accept="audio/*" multiple hidden>
+    </div>
+    <ul class="playlist" id="playlist"></ul>
+    <p class="hint" id="playlistEmptyHint">Add audio files from your device to build a playlist.</p>
+  </aside>
+
+  <audio id="musicPlayer" preload="metadata"></audio>
+
+  <!-- Junk Cleaner widget drawer -->
+  <aside class="drawer drawer-wide" id="cleanerDrawer" aria-label="Junk Cleaner">
+    <div class="drawer-head">
+      <h2>Junk Cleaner</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+
+    <section class="stats" id="cln-stats">
+      <div class="stat">
+        <span class="stat-num" id="cln-stat-tabs">–</span>
+        <span class="stat-label">tabs open</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="cln-stat-history">–</span>
+        <span class="stat-label">history items (7d)</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="cln-stat-downloads">–</span>
+        <span class="stat-label">downloads</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="cln-stat-cookies">–</span>
+        <span class="stat-label">cookies (open tabs)</span>
+      </div>
+    </section>
+
+    <section class="widget-panel">
+      <h3 class="widget-panel-title">Cleaning level</h3>
+      <div class="levels" id="cln-levels">
+        <button class="level" data-level="hour">
+          <span class="level-name">Quick</span>
+          <span class="level-desc">Last hour</span>
+        </button>
+        <button class="level" data-level="week">
+          <span class="level-name">Balanced</span>
+          <span class="level-desc">Last 7 days</span>
+        </button>
+        <button class="level" data-level="month">
+          <span class="level-name">Deep</span>
+          <span class="level-desc">Last 4 weeks</span>
+        </button>
+        <button class="level" data-level="all">
+          <span class="level-name">Max</span>
+          <span class="level-desc">Everything</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="widget-panel">
+      <div class="widget-panel-head-row">
+        <h3 class="widget-panel-title">What to clean</h3>
+        <button class="link-btn" id="cln-toggle-all">Select all</button>
+      </div>
+      <div class="checks" id="cln-checks">
+        <label class="check"><input type="checkbox" value="cache" checked><span>Cache &amp; cached images</span></label>
+        <label class="check"><input type="checkbox" value="cookies" checked><span>Cookies &amp; site data</span></label>
+        <label class="check"><input type="checkbox" value="history"><span>Browsing history</span></label>
+        <label class="check"><input type="checkbox" value="downloads"><span>Download list (not files on disk)</span></label>
+        <label class="check"><input type="checkbox" value="formData"><span>Autofill form data</span></label>
+        <label class="check"><input type="checkbox" value="serviceWorkers"><span>Service workers</span></label>
+        <label class="check"><input type="checkbox" value="localStorage"><span>Local &amp; session storage</span></label>
+        <label class="check"><input type="checkbox" value="indexedDB"><span>IndexedDB</span></label>
+      </div>
+    </section>
+
+    <button class="clean-btn" id="cln-clean-btn">
+      <span id="cln-clean-btn-label">Clean now</span>
+    </button>
+    <p class="result" id="cln-result"></p>
+
+    <section class="widget-panel">
+      <div class="widget-panel-head-row">
+        <h3 class="widget-panel-title">Stale tabs</h3>
+        <span class="badge" id="cln-stale-count">0</span>
+      </div>
+      <p class="widget-panel-hint">Tabs you haven't touched in a while. Pinned and audible (playing sound) tabs are always skipped.</p>
+      <div class="slider-row">
+        <input type="range" id="cln-stale-threshold" min="1" max="72" value="12" step="1">
+        <span class="slider-val" id="cln-stale-threshold-val">12h</span>
+      </div>
+      <button class="secondary-btn" id="cln-close-stale-btn">Close stale tabs</button>
+    </section>
+
+    <section class="widget-panel">
+      <div class="widget-panel-head-row">
+        <h3 class="widget-panel-title">Auto-sweep</h3>
+        <label class="switch">
+          <input type="checkbox" id="cln-auto-sweep-toggle">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+      <p class="widget-panel-hint">When on, runs your selected categories (last hour only, for safety) each time Brave starts up.</p>
+    </section>
+  </aside>
+
+  <!-- Resource Monitor widget drawer -->
+  <aside class="drawer drawer-wide" id="monitorDrawer" aria-label="Resource Monitor">
+    <div class="drawer-head">
+      <h2>Resource Monitor</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+
+    <section class="gauges">
+      <div class="gauge">
+        <div class="gauge-ring" id="mon-cpu-ring">
+          <span class="gauge-val" id="mon-cpu-val">–%</span>
+        </div>
+        <span class="gauge-label">CPU (system)</span>
+      </div>
+      <div class="gauge">
+        <div class="gauge-ring" id="mon-mem-ring">
+          <span class="gauge-val" id="mon-mem-val">–%</span>
+        </div>
+        <span class="gauge-label">RAM (system)</span>
+      </div>
+    </section>
+
+    <p class="mem-detail" id="mon-mem-detail">–</p>
+
+    <section class="stats-row">
+      <div class="stat">
+        <span class="stat-num" id="mon-stat-tabs">–</span>
+        <span class="stat-label">tabs open</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="mon-stat-discarded">–</span>
+        <span class="stat-label">suspended now</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="mon-stat-updated">–</span>
+        <span class="stat-label">last check</span>
+      </div>
+    </section>
+
+    <section class="widget-panel">
+      <div class="widget-panel-head-row">
+        <h3 class="widget-panel-title">Auto-suspend limiter</h3>
+        <label class="switch">
+          <input type="checkbox" id="mon-auto-toggle">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+      <p class="widget-panel-hint">
+        When on, suspends your least-recently-used background tabs (never
+        the active tab, pinned tabs, or ones playing audio) to stay under
+        the limits below.
+      </p>
+
+      <div class="range-field">
+        <div class="field-label-row">
+          <label for="mon-max-tabs">Max tabs kept active</label>
+          <span class="field-val" id="mon-max-tabs-val">Off</span>
+        </div>
+        <input type="range" id="mon-max-tabs" min="0" max="50" step="1" value="0">
+      </div>
+
+      <div class="range-field">
+        <div class="field-label-row">
+          <label for="mon-min-free-mem">Keep at least this much RAM free</label>
+          <span class="field-val" id="mon-min-free-mem-val">Off</span>
+        </div>
+        <input type="range" id="mon-min-free-mem" min="0" max="50" step="5" value="0">
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="mon-notify-toggle" checked>
+        <span>Notify me when tabs get suspended</span>
+      </label>
+    </section>
+
+    <section class="widget-panel">
+      <h3 class="widget-panel-title">Recent activity</h3>
+      <ul class="log" id="mon-log-list">
+        <li class="log-empty">Nothing suspended yet.</li>
+      </ul>
+    </section>
+
+    <p class="disclaimer">
+      CPU and RAM figures are <strong>system-wide</strong> — Brave doesn't expose
+      its own process usage to extensions, and no extension can enforce a hard
+      OS-level cap. Limits above work by suspending tabs, which is the
+      practical way to bring the browser's own footprint down.
+    </p>
+  </aside>
+
+  <!-- Settings drawer -->
+  <aside class="drawer" id="settingsDrawer" aria-label="Settings">
+    <div class="drawer-head">
+      <h2>Settings</h2>
+      <button class="drawer-close" data-close>&times;</button>
+    </div>
+
+    <div class="settings-group">
+      <h3>Accent</h3>
+      <div class="swatches" id="accentSwatches"></div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Background</h3>
+      <div class="option-row" id="bgOptions">
+        <button class="option-chip" data-bg="grid">Grid</button>
+        <button class="option-chip" data-bg="plain">Plain</button>
+        <button class="option-chip" data-bg="glow">Glow</button>
+        <button class="option-chip" data-bg="image">Image</button>
+        <button class="option-chip" data-bg="video">Live video</button>
+      </div>
+
+      <div class="wallpaper-controls" id="wallpaperControls" hidden>
+        <p class="hint" id="wallpaperHint">Choose a video file to loop as your background.</p>
+        <div class="option-row">
+          <button class="btn-ghost" id="wallpaperUploadBtn">Choose file…</button>
+          <button class="btn-ghost danger" id="wallpaperRemoveBtn">Remove</button>
+        </div>
+        <input type="file" id="wallpaperFile" hidden>
+        <label class="field dim-field">
+          <span>Dim overlay <span id="dimValue">45%</span></span>
+          <input type="range" id="wallpaperDim" min="0" max="80" value="45">
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Weather</h3>
+      <div class="field-row">
+        <input type="text" id="weatherCityInput" class="text-input" placeholder="City, e.g. Colombo">
+        <button class="btn-ghost" id="weatherCitySave">Set</button>
+      </div>
+      <div class="option-row" style="margin-top:8px;">
+        <button class="btn-ghost" id="weatherUseLocation">Use my location</button>
+        <button class="option-chip" data-unit="c">°C</button>
+        <button class="option-chip" data-unit="f">°F</button>
+      </div>
+      <p class="hint" id="weatherHint"></p>
+    </div>
+
+    <div class="settings-group">
+      <h3>Default search engine</h3>
+      <div class="option-row" id="engineOptions">
+        <button class="option-chip" data-engine="brave">Brave</button>
+        <button class="option-chip" data-engine="google">Google</button>
+        <button class="option-chip" data-engine="ddg">DuckDuckGo</button>
+        <button class="option-chip" data-engine="bing">Bing</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Your name</h3>
+      <input type="text" id="userName" class="text-input" placeholder="Optional, used in the greeting" maxlength="24">
+    </div>
+
+    <div class="settings-group">
+      <h3>Shortcuts data</h3>
+      <div class="option-row">
+        <button class="btn-ghost" id="exportBtn">Export JSON</button>
+        <button class="btn-ghost" id="importBtn">Import JSON</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+      <button class="btn-ghost danger" id="resetBtn">Reset to defaults</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim"></div>
+
+  <script src="js/resource-helpers.js"></script>
+  <script src="js/cleaner-widget.js"></script>
+  <script src="js/monitor-widget.js"></script>
+  <script src="js/newtab.js"></script>
+</body>
+</html>

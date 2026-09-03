@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "New Tab",
+  "short_name": "New Tab",
+  "version": "3.0.0",
+  "description": "A speed-dial dashboard new tab page: quick-launch grid, live clock, search bar, weather, background music, notes, to-dos, a junk cleaner, and a live CPU/RAM widget — all in one extension.",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "permissions": [
+    "storage",
+    "browsingData",
+    "tabs",
+    "downloads",
+    "history",
+    "cookies",
+    "system.cpu",
+    "system.memory",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
